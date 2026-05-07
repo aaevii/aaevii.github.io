@@ -2,128 +2,303 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
   <title>aevi</title>
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
     }
 
-    body {
-      overflow: hidden;
-      background: black;
-      font-family: Arial, sans-serif;
-      color: white;
-      height: 100vh;
-      cursor: crosshair;
+    html,
+    body{
+      width:100%;
+      height:100%;
+      overflow:hidden;
+      background:#000;
+      color:white;
+      font-family:Arial, Helvetica, sans-serif;
+      cursor:crosshair;
     }
 
-    canvas {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
+    canvas{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      z-index:0;
     }
 
-    .overlay {
-      position: relative;
-      z-index: 10;
-      width: 100%;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 28px;
-      pointer-events: none;
+    .noise{
+      position:fixed;
+      inset:0;
+      z-index:2;
+      pointer-events:none;
+      opacity:0.06;
+      mix-blend-mode:screen;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='white'%3E%3Ccircle cx='2' cy='3' r='1'/%3E%3Ccircle cx='38' cy='91' r='1'/%3E%3Ccircle cx='122' cy='41' r='1'/%3E%3Ccircle cx='90' cy='100' r='1'/%3E%3Ccircle cx='60' cy='20' r='1'/%3E%3C/g%3E%3C/svg%3E");
+      animation:noiseShift .15s infinite;
     }
 
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 12px;
-      letter-spacing: 0.2em;
-      text-transform: lowercase;
-      mix-blend-mode: difference;
+    @keyframes noiseShift{
+      0%{transform:translate(0,0);}
+      25%{transform:translate(-1%,1%);}
+      50%{transform:translate(1%,-1%);}
+      75%{transform:translate(0.5%,0.5%);}
+      100%{transform:translate(0,0);}
     }
 
-    .menu {
-      display: flex;
-      gap: 24px;
-      pointer-events: auto;
+    .ui{
+      position:relative;
+      z-index:5;
+      width:100%;
+      height:100vh;
+      padding:24px;
+      pointer-events:none;
     }
 
-    .menu a {
-      color: white;
-      text-decoration: none;
-      opacity: 0.85;
-      transition: opacity 0.2s ease;
+    .small{
+      font-size:11px;
+      line-height:1.7;
+      letter-spacing:0.22em;
+      text-transform:lowercase;
+      opacity:0.88;
+      font-weight:400;
     }
 
-    .menu a:hover {
-      opacity: 0.4;
+    .micro{
+      font-size:9px;
+      letter-spacing:0.18em;
+      text-transform:uppercase;
+      opacity:0.45;
     }
 
-    .center {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .nav{
+      position:absolute;
+      top:24px;
+      right:24px;
+
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:8px;
+
+      pointer-events:auto;
     }
 
-    .hero {
-      font-size: clamp(48px, 12vw, 160px);
-      font-weight: 100;
-      letter-spacing: -0.06em;
-      text-transform: lowercase;
-      mix-blend-mode: screen;
-      animation: flicker 4s infinite;
+    .nav a{
+      color:white;
+      text-decoration:none;
+      transition:all .2s ease;
+      position:relative;
     }
 
-    .footer {
-      font-size: 10px;
-      opacity: 0.45;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      mix-blend-mode: difference;
+    .nav a:hover{
+      opacity:.4;
+      transform:translateX(-4px);
     }
 
-    @keyframes flicker {
-      0%, 100% { opacity: 1; }
-      2% { opacity: 0.4; }
-      4% { opacity: 1; }
-      70% { opacity: 0.8; }
-      72% { opacity: 1; }
+    .brand{
+      position:absolute;
+      top:24px;
+      left:24px;
     }
+
+    .hero{
+      position:absolute;
+      left:7vw;
+      top:22vh;
+
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+
+    .hero-main{
+      font-size:clamp(56px,12vw,180px);
+      letter-spacing:-0.08em;
+      line-height:0.9;
+      font-weight:100;
+      text-transform:lowercase;
+      opacity:0.95;
+      animation:flicker 5s infinite;
+    }
+
+    .hero-sub{
+      max-width:240px;
+      transform:translateX(90px);
+    }
+
+    .coordinates{
+      position:absolute;
+      bottom:18vh;
+      right:12vw;
+      width:180px;
+      text-align:right;
+    }
+
+    .archive{
+      position:absolute;
+      left:14vw;
+      bottom:10vh;
+
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .archive-line{
+      width:160px;
+      height:1px;
+      background:white;
+      opacity:0.18;
+    }
+
+    .floating{
+      position:absolute;
+      top:54%;
+      right:18%;
+
+      width:120px;
+      text-align:left;
+
+      opacity:.65;
+
+      animation:float 7s ease-in-out infinite;
+    }
+
+    .gridline-h{
+      position:absolute;
+      left:0;
+      top:50%;
+      width:100%;
+      height:1px;
+      background:white;
+      opacity:0.04;
+    }
+
+    .gridline-v{
+      position:absolute;
+      top:0;
+      left:52%;
+      width:1px;
+      height:100%;
+      background:white;
+      opacity:0.04;
+    }
+
+    .scanlines{
+      position:fixed;
+      inset:0;
+      z-index:3;
+      pointer-events:none;
+      opacity:.06;
+      background:
+      repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.08),
+        rgba(255,255,255,.08) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      mix-blend-mode:screen;
+    }
+
+    @keyframes flicker{
+      0%,100%{opacity:.95;}
+      2%{opacity:.2;}
+      3%{opacity:.95;}
+      73%{opacity:.6;}
+      74%{opacity:.95;}
+    }
+
+    @keyframes float{
+      0%{transform:translateY(0px);}
+      50%{transform:translateY(-12px);}
+      100%{transform:translateY(0px);}
+    }
+
+    @media(max-width:768px){
+
+      .hero{
+        top:28vh;
+      }
+
+      .hero-sub{
+        transform:none;
+      }
+
+      .floating{
+        right:10%;
+        top:68%;
+      }
+
+      .coordinates{
+        right:24px;
+        bottom:20vh;
+      }
+
+    }
+
   </style>
 </head>
 
 <body>
 
-<div class="overlay">
+<div class="noise"></div>
+<div class="scanlines"></div>
 
-  <div class="topbar">
-    <div>aevi</div>
+<div class="ui">
 
-    <nav class="menu">
-      <a href="#">contact</a>
-      <a href="#">projects</a>
-      <a href="#">archive</a>
-    </nav>
+  <div class="gridline-h"></div>
+  <div class="gridline-v"></div>
+
+  <div class="brand small">
+    aevi
   </div>
 
-  <div class="center">
-    <div class="hero">aevi</div>
-  </div>
+  <nav class="nav small">
+    <a href="#">contact</a>
+    <a href="#">projects</a>
+    <a href="#">archive</a>
+  </nav>
 
-  <div class="footer">
-    interactive analog interface
-  </div>
+  <section class="hero">
+
+    <div class="hero-main">
+      aevi
+    </div>
+
+    <div class="hero-sub small">
+      analog systems / visual archives / unstable signals / fragmented interface
+    </div>
+
+  </section>
+
+  <section class="floating micro">
+    signal drift detected<br/>
+    cursor responsive field active
+  </section>
+
+  <section class="coordinates micro">
+    transmission_004<br/>
+    unstable visual layer<br/>
+    interactive analog surface
+  </section>
+
+  <section class="archive">
+
+    <div class="archive-line"></div>
+
+    <div class="micro">
+      visual memory fragments
+    </div>
+
+  </section>
 
 </div>
 
@@ -145,30 +320,47 @@ const camera = new THREE.OrthographicCamera(
 camera.position.z = 1;
 
 const renderer = new THREE.WebGLRenderer({
-  antialias: true
+  antialias:true
 });
 
-renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setSize(
+  window.innerWidth,
+  window.innerHeight
+);
+
+renderer.setPixelRatio(
+  Math.min(window.devicePixelRatio,2)
+);
 
 document.body.appendChild(renderer.domElement);
 
 const uniforms = {
-  time: { value: 0 },
-  mouse: { value: new THREE.Vector2(0.5, 0.5) },
-  click: { value: 0 }
+
+  time:{ value:0 },
+
+  mouse:{
+    value:new THREE.Vector2(0.5,0.5)
+  },
+
+  click:{ value:0 }
+
 };
 
 const material = new THREE.ShaderMaterial({
 
   uniforms,
 
-  vertexShader: `
-    void main() {
-      gl_Position = vec4(position, 1.0);
+  vertexShader:`
+
+    void main(){
+
+      gl_Position = vec4(position,1.0);
+
     }
+
   `,
 
-  fragmentShader: `
+  fragmentShader:`
 
     precision highp float;
 
@@ -176,81 +368,134 @@ const material = new THREE.ShaderMaterial({
     uniform vec2 mouse;
     uniform float click;
 
-    float random(vec2 st) {
+    float random(vec2 st){
+
       return fract(
-        sin(dot(st.xy, vec2(12.9898,78.233)))
+        sin(dot(st.xy,
+        vec2(12.9898,78.233)))
         * 43758.5453123
       );
+
     }
 
-    void main() {
+    float noise(vec2 st){
 
-      vec2 uv = gl_FragCoord.xy / vec2(${window.innerWidth.toFixed(1)}, ${window.innerHeight.toFixed(1)});
+      vec2 i = floor(st);
+      vec2 f = fract(st);
 
-      float dist = distance(uv, mouse);
+      float a = random(i);
+      float b = random(i + vec2(1.0,0.0));
+      float c = random(i + vec2(0.0,1.0));
+      float d = random(i + vec2(1.0,1.0));
 
-      float glow =
-        smoothstep(0.25, 0.0, dist);
+      vec2 u = f * f * (3.0 - 2.0 * f);
 
-      float scanline =
-        sin(uv.y * 1200.0 + time * 8.0)
-        * 0.03;
+      return mix(a,b,u.x)
+      + (c-a)*u.y*(1.0-u.x)
+      + (d-b)*u.x*u.y;
 
-      float noise =
-        random(uv * time * 0.5)
-        * 0.06;
+    }
+
+    void main(){
+
+      vec2 uv = gl_FragCoord.xy / vec2(
+        ${window.innerWidth.toFixed(1)},
+        ${window.innerHeight.toFixed(1)}
+      );
+
+      vec2 centered = uv - 0.5;
+
+      float dist = distance(uv,mouse);
+
+      float radial =
+        smoothstep(0.35,0.0,dist);
 
       float ripple =
-        sin(dist * 80.0 - time * 4.0)
-        * 0.015;
+        sin(dist * 70.0 - time * 4.0)
+        * 0.02;
+
+      float grain =
+        random(uv * time * 0.2)
+        * 0.05;
+
+      float field =
+        noise(uv * 6.0 + time * 0.08)
+        * 0.08;
+
+      float scan =
+        sin(uv.y * 1300.0 + time * 8.0)
+        * 0.03;
 
       float glitch =
         click *
-        sin(uv.y * 120.0 + time * 40.0)
-        * 0.18;
+        sin(uv.y * 180.0 + time * 40.0)
+        * 0.24;
 
-      vec3 color = vec3(0.015);
+      float vignette =
+        smoothstep(
+          0.9,
+          0.2,
+          length(centered)
+        );
 
-      color += glow * 0.18;
-      color += noise;
-      color += scanline;
+      vec3 color = vec3(0.01);
+
+      color += radial * 0.18;
       color += ripple;
+      color += grain;
+      color += field;
+      color += scan;
       color += glitch;
 
-      gl_FragColor = vec4(color, 1.0);
+      color *= vignette;
+
+      gl_FragColor = vec4(color,1.0);
 
     }
 
   `
+
 });
 
-const geometry = new THREE.PlaneGeometry(2, 2);
+const geometry = new THREE.PlaneGeometry(2,2);
 
-const mesh = new THREE.Mesh(geometry, material);
+const mesh = new THREE.Mesh(
+  geometry,
+  material
+);
 
 scene.add(mesh);
 
-window.addEventListener('mousemove', (e) => {
+window.addEventListener("mousemove",(e)=>{
 
   uniforms.mouse.value.x =
     e.clientX / window.innerWidth;
 
   uniforms.mouse.value.y =
-    1.0 - (e.clientY / window.innerHeight);
+    1.0 -
+    (e.clientY / window.innerHeight);
 
 });
 
-window.addEventListener('click', () => {
+window.addEventListener("click",()=>{
 
   uniforms.click.value = 1.0;
 
-  setTimeout(() => {
+  document.body.style.transform =
+    "translateX(2px)";
+
+  setTimeout(()=>{
+
     uniforms.click.value = 0.0;
-  }, 150);
+
+    document.body.style.transform =
+      "translateX(0px)";
+
+  },140);
 
 });
 
-window.addEventListener('resize', () => {
+window.addEventListener("resize",()=>{
 
   renderer.setSize(
     window.innerWidth,
@@ -259,13 +504,13 @@ window.addEventListener('resize', () => {
 
 });
 
-function animate() {
+function animate(){
 
   requestAnimationFrame(animate);
 
   uniforms.time.value += 0.01;
 
-  renderer.render(scene, camera);
+  renderer.render(scene,camera);
 
 }
 
