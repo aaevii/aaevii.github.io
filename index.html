@@ -1,8 +1,9 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>aevi</title>
 
 <style>
@@ -18,44 +19,49 @@ html,body{
     height:100%;
     overflow:hidden;
     background:black;
-    font-family:Arial, Helvetica, sans-serif;
     color:white;
+    font-family:Arial, Helvetica, sans-serif;
 }
 
-/* ---------------- BACKGROUND ---------------- */
+/* ---------------- CANVAS ---------------- */
+
+#glitchCanvas{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    z-index:-3;
+    background:black;
+}
+
+/* scanlines */
+
+.scanlines{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:10;
+    background:
+    repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.03),
+        rgba(255,255,255,0.03) 1px,
+        transparent 2px,
+        transparent 4px
+    );
+    mix-blend-mode:screen;
+    opacity:0.2;
+}
+
+/* grain */
 
 .noise{
     position:fixed;
     inset:0;
     background-image:url("https://grainy-gradients.vercel.app/noise.svg");
-    opacity:0.08;
+    opacity:0.06;
+    z-index:11;
     pointer-events:none;
-    z-index:100;
-}
-
-.glitch-bg{
-    position:fixed;
-    inset:0;
-    background:
-        linear-gradient(
-            rgba(255,255,255,0.02),
-            rgba(255,255,255,0.01)
-        ),
-        repeating-linear-gradient(
-            0deg,
-            rgba(255,255,255,0.03),
-            rgba(255,255,255,0.01) 1px,
-            transparent 2px,
-            transparent 4px
-        );
-    animation:flicker 0.15s infinite;
-    z-index:-2;
-}
-
-@keyframes flicker{
-    0%{opacity:0.9;}
-    50%{opacity:1;}
-    100%{opacity:0.92;}
 }
 
 /* ---------------- INTRO ---------------- */
@@ -69,41 +75,38 @@ html,body{
     align-items:center;
     z-index:999;
     animation:fadeOut 1.5s ease forwards;
-    animation-delay:3.5s;
+    animation-delay:3s;
 }
 
 .intro-text{
     font-size:14px;
-    letter-spacing:8px;
+    letter-spacing:10px;
     text-transform:lowercase;
-    position:relative;
-    animation:glitch 0.2s infinite;
+    animation:introGlitch 0.15s infinite;
 }
 
-@keyframes glitch{
+@keyframes introGlitch{
+
     0%{
         transform:translate(0);
-        text-shadow:
-            -2px 0 red,
-            2px 0 blue;
+        text-shadow:-2px 0 red,2px 0 blue;
     }
+
     20%{
-        transform:translate(-1px,1px);
+        transform:translate(-2px,1px);
     }
+
     40%{
-        transform:translate(1px,-1px);
+        transform:translate(2px,-1px);
     }
+
     60%{
-        transform:translate(-2px,0px);
+        transform:translate(-1px,0px);
     }
-    80%{
-        transform:translate(2px,1px);
-    }
+
     100%{
         transform:translate(0);
-        text-shadow:
-            -2px 0 red,
-            2px 0 blue;
+        text-shadow:-2px 0 red,2px 0 blue;
     }
 }
 
@@ -114,16 +117,7 @@ html,body{
     }
 }
 
-/* ---------------- MAIN ---------------- */
-
-.container{
-    position:relative;
-    width:100%;
-    height:100%;
-    display:flex;
-}
-
-/* nav */
+/* ---------------- NAV ---------------- */
 
 nav{
     position:fixed;
@@ -137,7 +131,7 @@ nav a{
     color:white;
     text-decoration:none;
     font-size:11px;
-    margin-bottom:8px;
+    margin-bottom:10px;
     opacity:0.7;
     transition:0.3s;
     letter-spacing:2px;
@@ -147,7 +141,7 @@ nav a:hover{
     opacity:1;
 }
 
-/* content */
+/* ---------------- PAGES ---------------- */
 
 .page{
     position:absolute;
@@ -161,40 +155,43 @@ nav a:hover{
     display:block;
 }
 
+/* landing */
+
 .hero{
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    width:100%;
     height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
 }
 
 .hero h1{
     font-size:14px;
+    letter-spacing:14px;
     font-weight:400;
-    letter-spacing:12px;
-    text-transform:lowercase;
-    animation:softPulse 3s infinite;
+    z-index:20;
+    animation:softBlink 4s infinite;
 }
 
-@keyframes softPulse{
+@keyframes softBlink{
     0%{opacity:0.5;}
     50%{opacity:1;}
     100%{opacity:0.5;}
 }
 
-/* sections */
+/* content */
 
 .section-title{
     font-size:11px;
-    margin-bottom:30px;
-    opacity:0.5;
     letter-spacing:4px;
+    margin-bottom:40px;
+    opacity:0.5;
 }
 
 .text{
     max-width:600px;
-    line-height:1.8;
     font-size:13px;
+    line-height:1.8;
     opacity:0.8;
 }
 
@@ -204,27 +201,18 @@ nav a:hover{
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
     gap:20px;
-    margin-top:40px;
 }
 
 .archive-item{
     border:1px solid rgba(255,255,255,0.08);
-    padding:20px;
     min-height:180px;
-    position:relative;
-    overflow:hidden;
+    padding:20px;
     transition:0.4s;
 }
 
 .archive-item:hover{
     background:white;
     color:black;
-}
-
-.archive-item span{
-    font-size:10px;
-    letter-spacing:2px;
-    opacity:0.5;
 }
 
 /* contact */
@@ -238,34 +226,20 @@ nav a:hover{
     color:white;
     text-decoration:none;
     margin-bottom:15px;
-    font-size:13px;
     opacity:0.7;
-    transition:0.3s;
 }
 
 .contact-links a:hover{
     opacity:1;
 }
 
-/* mobile */
-
-@media(max-width:768px){
-
-    .page{
-        padding:90px 30px;
-    }
-
-    .hero h1{
-        letter-spacing:8px;
-    }
-
-}
-
 </style>
 </head>
 <body>
 
-<div class="glitch-bg"></div>
+<canvas id="glitchCanvas"></canvas>
+
+<div class="scanlines"></div>
 <div class="noise"></div>
 
 <!-- INTRO -->
@@ -297,17 +271,13 @@ nav a:hover{
     <div class="section-title">INFORMATION</div>
 
     <div class="text">
-        aevi is a digital artist portfolio exploring fragmented memory,
-        analog distortion, visual decay, and experimental motion.
+        aevi is a digital artist portfolio exploring analog signal collapse,
+        fragmented memory systems, and synthetic distortion.
 
         <br><br>
 
-        Inspired by underground broadcast systems, VHS texture,
-        CRT artifacts, and anti-clean digital aesthetics.
-
-        <br><br>
-
-        The work exists between signal and collapse.
+        Inspired by corrupted broadcasts, tachyon interference,
+        CRT ghosts, and decoder feedback loops.
     </div>
 </section>
 
@@ -320,23 +290,19 @@ nav a:hover{
     <div class="archive-grid">
 
         <div class="archive-item">
-            <span>001</span>
-            <h3>static memory</h3>
+            SIGNAL_001
         </div>
 
         <div class="archive-item">
-            <span>002</span>
-            <h3>signal loss</h3>
+            VORTEX_DECODER
         </div>
 
         <div class="archive-item">
-            <span>003</span>
-            <h3>transmission</h3>
+            ANALOG_COLLAPSE
         </div>
 
         <div class="archive-item">
-            <span>004</span>
-            <h3>vhs archive</h3>
+            TACHYON_FEED
         </div>
 
     </div>
@@ -350,20 +316,20 @@ nav a:hover{
     <div class="section-title">CONTACT</div>
 
     <div class="text">
-        For commissions, collaborations, installations,
-        or visual direction inquiries.
+        commissions / visual systems / installations / motion work
     </div>
 
     <div class="contact-links">
-        <a href="mailto:hello@aevi.art">hello@aevi.art</a>
         <a href="#">instagram</a>
-        <a href="#">are.na</a>
         <a href="#">github</a>
+        <a href="#">email</a>
     </div>
 
 </section>
 
 <script>
+
+/* ---------------- PAGE NAV ---------------- */
 
 function showPage(id){
 
@@ -374,16 +340,154 @@ function showPage(id){
     document.getElementById(id).classList.add('active');
 }
 
-/* subtle glitch movement */
+/* ---------------- GLITCH SYSTEM ---------------- */
 
-setInterval(()=>{
+const canvas = document.getElementById('glitchCanvas');
+const ctx = canvas.getContext('2d');
 
-    document.body.style.transform =
-        `translate(${Math.random()*2-1}px, ${Math.random()*2-1}px)`;
+let w,h;
 
-},120);
+function resize(){
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+}
+
+resize();
+window.addEventListener('resize', resize);
+
+let glitchBursts = [];
+
+/* create vortex click */
+
+window.addEventListener('click', e=>{
+
+    glitchBursts.push({
+        x:e.clientX,
+        y:e.clientY,
+        radius:0,
+        life:100
+    });
+
+});
+
+/* analog glitch render */
+
+function render(){
+
+    ctx.fillStyle = "rgba(0,0,0,0.18)";
+    ctx.fillRect(0,0,w,h);
+
+    /* base static */
+
+    for(let i=0;i<80;i++){
+
+        let x = Math.random()*w;
+        let y = Math.random()*h;
+
+        let width = Math.random()*300;
+        let height = Math.random()*2;
+
+        ctx.fillStyle = `rgba(255,255,255,${Math.random()*0.05})`;
+
+        ctx.fillRect(x,y,width,height);
+    }
+
+    /* vortex decoder pulses */
+
+    glitchBursts.forEach((g,index)=>{
+
+        g.radius += 6;
+        g.life--;
+
+        /* rings */
+
+        for(let i=0;i<6;i++){
+
+            ctx.beginPath();
+
+            ctx.strokeStyle =
+            `rgba(${200+i*10},${200-i*20},255,${g.life/120})`;
+
+            ctx.lineWidth = Math.random()*2;
+
+            ctx.arc(
+                g.x + (Math.random()*20-10),
+                g.y + (Math.random()*20-10),
+                g.radius + i*18,
+                0,
+                Math.PI*2
+            );
+
+            ctx.stroke();
+        }
+
+        /* horizontal analog tears */
+
+        for(let i=0;i<20;i++){
+
+            let yy =
+            g.y +
+            (Math.random()-0.5)*g.radius;
+
+            ctx.fillStyle =
+            `rgba(255,255,255,${Math.random()*0.15})`;
+
+            ctx.fillRect(
+                Math.random()*w,
+                yy,
+                Math.random()*400,
+                Math.random()*2
+            );
+        }
+
+        /* chromatic streaks */
+
+        ctx.fillStyle = `rgba(255,0,80,0.05)`;
+
+        ctx.fillRect(
+            g.x-g.radius,
+            g.y,
+            g.radius*2,
+            2
+        );
+
+        ctx.fillStyle = `rgba(0,180,255,0.05)`;
+
+        ctx.fillRect(
+            g.x,
+            g.y-g.radius,
+            2,
+            g.radius*2
+        );
+
+        if(g.life <=0){
+            glitchBursts.splice(index,1);
+        }
+
+    });
+
+    /* random decoder flickers */
+
+    if(Math.random() < 0.03){
+
+        ctx.fillStyle =
+        `rgba(255,255,255,0.08)`;
+
+        ctx.fillRect(
+            0,
+            Math.random()*h,
+            w,
+            Math.random()*8
+        );
+    }
+
+    requestAnimationFrame(render);
+}
+
+render();
 
 </script>
 
 </body>
 </html>
+```
