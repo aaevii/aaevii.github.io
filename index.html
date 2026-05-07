@@ -1,1 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <title>aevi</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      overflow: hidden;
+      background: black;
+      font-family: Arial, sans-serif;
+      color: white;
+      height: 100vh;
+      cursor: crosshair;
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .overlay {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 28px;
+      pointer-events: none;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: lowercase;
+      mix-blend-mode: difference;
+    }
+
+    .menu {
+      display: flex;
+      gap: 24px;
+      pointer-events: auto;
+    }
+
+    .menu a {
+      color: white;
+      text-decoration: none;
+      opacity: 0.85;
+      transition: opacity 0.2s ease;
+    }
+
+    .menu a:hover {
+      opacity: 0.4;
+    }
+
+    .center {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero {
+      font-size: clamp(48px, 12vw, 160px);
+      font-weight: 100;
+      letter-spacing: -0.06em;
+      text-transform: lowercase;
+      mix-blend-mode: screen;
+      animation: flicker 4s infinite;
+    }
+
+    .footer {
+      font-size: 10px;
+      opacity: 0.45;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      mix-blend-mode: difference;
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      2% { opacity: 0.4; }
+      4% { opacity: 1; }
+      70% { opacity: 0.8; }
+      72% { opacity: 1; }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="overlay">
+
+  <div class="topbar">
+    <div>aevi</div>
+
+    <nav class="menu">
+      <a href="#">contact</a>
+      <a href="#">projects</a>
+      <a href="#">archive</a>
+    </nav>
+  </div>
+
+  <div class="center">
+    <div class="hero">aevi</div>
+  </div>
+
+  <div class="footer">
+    interactive analog interface
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+<script>
+
+const scene = new THREE.Scene();
+
+const camera = new THREE.OrthographicCamera(
+  -1,
+  1,
+  1,
+  -1,
+  0.1,
+  10
+);
+
+camera.position.z = 1;
+
+const renderer = new THREE.WebGLRenderer({
+  antialias: true
+});
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+document.body.appendChild(renderer.domElement);
+
+const uniforms = {
+  time: { value: 0 },
+  mouse: { value: new THREE.Vector2(0.5, 0.5) },
+  click: { value: 0 }
+};
+
+const material = new THREE.ShaderMaterial({
+
+  uniforms,
+
+  vertexShader: `
+    void main() {
+      gl_Position = vec4(position, 1.0);
+    }
+  `,
+
+  fragmentShader: `
+
+    precision highp float;
+
+    uniform float time;
+    uniform vec2 mouse;
+    uniform float click;
+
+    float random(vec2 st) {
+      return fract(
+        sin(dot(st.xy, vec2(12.9898,78.233)))
+        * 43758.5453123
+      );
+    }
+
+    void main() {
+
+      vec2 uv = gl_FragCoord.xy / vec2(${window.innerWidth.toFixed(1)}, ${window.innerHeight.toFixed(1)});
+
+      float dist = distance(uv, mouse);
+
+      float glow =
+        smoothstep(0.25, 0.0, dist);
+
+      float scanline =
+        sin(uv.y * 1200.0 + time * 8.0)
+        * 0.03;
+
+      float noise =
+        random(uv * time * 0.5)
+        * 0.06;
+
+      float ripple =
+        sin(dist * 80.0 - time * 4.0)
+        * 0.015;
+
+      float glitch =
+        click *
+        sin(uv.y * 120.0 + time * 40.0)
+        * 0.18;
+
+      vec3 color = vec3(0.015);
+
+      color += glow * 0.18;
+      color += noise;
+      color += scanline;
+      color += ripple;
+      color += glitch;
+
+      gl_FragColor = vec4(color, 1.0);
+
+    }
+
+  `
+});
+
+const geometry = new THREE.PlaneGeometry(2, 2);
+
+const mesh = new THREE.Mesh(geometry, material);
+
+scene.add(mesh);
+
+window.addEventListener('mousemove', (e) => {
+
+  uniforms.mouse.value.x =
+    e.clientX / window.innerWidth;
+
+  uniforms.mouse.value.y =
+    1.0 - (e.clientY / window.innerHeight);
+
+});
+
+window.addEventListener('click', () => {
+
+  uniforms.click.value = 1.0;
+
+  setTimeout(() => {
+    uniforms.click.value = 0.0;
+  }, 150);
+
+});
+
+window.addEventListener('resize', () => {
+
+  renderer.setSize(
+    window.innerWidth,
+    window.innerHeight
+  );
+
+});
+
+function animate() {
+
+  requestAnimationFrame(animate);
+
+  uniforms.time.value += 0.01;
+
+  renderer.render(scene, camera);
+
+}
+
+animate();
+
+</script>
+
+</body>
+</html>
